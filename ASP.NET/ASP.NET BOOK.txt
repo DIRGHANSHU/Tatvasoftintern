@@ -1,0 +1,75 @@
+using Microsoft.AspNetCore.Mvc;
+
+
+namespace tatvasoft_api1.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BooksController : ControllerBase
+    {
+        private static List<Books> books = new List<Books>
+        {
+            new Books { Id = 1, Name = "C++", Author = "Author A" },
+            new Books { Id = 2, Name = "DSA", Author = "Author B" },
+            new Books { Id = 3, Name = "COA", Author = "Author C" }
+        };
+
+        // GET: api/<BooksController>
+        [HttpGet]
+        public IEnumerable<Books> Get()
+        {
+            return books;
+        }
+
+        // GET api/<BooksController>/5
+        [HttpGet("{id}")]
+        public ActionResult<Books> Get(int id)
+        {
+            var book = books.FirstOrDefault(s => s.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            return book;
+        }
+
+        // POST api/<BooksController>
+        [HttpPost]
+        public ActionResult<Books> Post([FromBody] Books book)
+        {
+            book.Id = books.Max(b => b.Id) + 1;
+            books.Add(book);
+            return CreatedAtAction(nameof(Get), new { id = book.Id }, book);
+        }
+
+        // PUT api/<BooksController>/5
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Books updatedBook)
+        {
+            var book = books.FirstOrDefault(b => b.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            book.Name = updatedBook.Name;
+            book.Author = updatedBook.Author;
+
+            return NoContent();
+        }
+
+        // DELETE api/<BooksController>/5
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var book = books.FirstOrDefault(b => b.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            books.Remove(book);
+            return NoContent();
+        }
+    }
+}
