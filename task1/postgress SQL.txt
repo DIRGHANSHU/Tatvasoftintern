@@ -1,0 +1,148 @@
+
+
+
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(15),
+    address TEXT,
+    date_of_birth DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+INSERT INTO customers (name, email, phone, address, date_of_birth) 
+VALUES 
+('Alice Johnson', 'alice.johnson@example.com', '555-123-4567', '789 Maple St, Springfield, IL', '1990-05-15'),
+('Bob Smith', 'bob.smith@example.com', '555-234-5678', '456 Pine St, Metropolis, NY', '1985-08-20'),
+('Carol Williams', 'carol.williams@example.com', '555-345-6789', '123 Oak St, Gotham, NJ', '1978-12-05'),
+('David Brown', 'david.brown@example.com', '555-456-7890', '789 Elm St, Star City, CA', '1983-03-12'),
+('Eva Davis', 'eva.davis@example.com', '555-567-8901', '456 Cedar St, Central City, WA', '1995-07-30'),
+('Frank Wilson', 'frank.wilson@example.com', '555-678-9012', '123 Birch St, Keystone, FL', '1988-10-25'),
+('Grace Miller', 'grace.miller@example.com', '555-789-0123', '789 Ash St, Coast City, TX', '1992-01-10'),
+('Henry Martinez', 'henry.martinez@example.com', '555-890-1234', '456 Redwood St, Bludhaven, CO', '1987-04-14'),
+('Ivy Garcia', 'ivy.garcia@example.com', '555-901-2345', '123 Spruce St, Fawcett City, MA', '1993-09-18'),
+('Jack Anderson', 'jack.anderson@example.com', '555-012-3456', '789 Sycamore St, Hub City, OR', '1980-11-22');
+
+
+
+
+SELECT * FROM customers;
+
+
+UPDATE customers 
+SET email = 'alice.newemail@example.com' 
+WHERE name = 'Alice Johnson';
+
+
+DELETE FROM customers 
+WHERE name = 'Jack Anderson';
+
+
+ALTER TABLE customers 
+ADD COLUMN loyalty_points INT DEFAULT 0;
+
+UPDATE customers 
+SET loyalty_points = 100 
+WHERE name = 'Bob Smith';
+
+
+SELECT * FROM customers 
+WHERE loyalty_points > 50;
+
+
+SELECT * FROM customers 
+WHERE date_of_birth > '1990-01-01';
+
+
+
+
+
+SELECT COUNT(*) FROM customers;
+
+SELECT EXTRACT(YEAR FROM date_of_birth) AS birth_year, COUNT(*) 
+FROM customers 
+GROUP BY birth_year 
+ORDER BY birth_year;
+
+UPDATE customers 
+SET loyalty_points = 100 
+WHERE name = 'Bob Smith';
+
+
+SELECT * FROM customers 
+WHERE loyalty_points > 50;
+
+
+SELECT * FROM customers 
+WHERE date_of_birth > '1990-01-01';
+
+
+SELECT COUNT(*) FROM customers;
+
+SELECT EXTRACT(YEAR FROM date_of_birth) AS birth_year, COUNT(*) 
+FROM customers 
+GROUP BY birth_year 
+ORDER BY birth_year;
+
+
+
+
+
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    customer_id INT REFERENCES customers(customer_id),
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10, 2)
+);
+
+
+INSERT INTO orders (customer_id, order_date, amount) 
+VALUES 
+(1, '2024-05-01', 150.00),
+(2, '2024-05-02', 200.00),
+(1, '2024-05-03', 100.00),
+(3, '2024-05-04', 250.00),
+(4, '2024-05-05', 300.00);
+
+
+SELECT 
+    c.customer_id, 
+    c.name, 
+    o.order_id, 
+    o.order_date, 
+    o.amount 
+FROM 
+    customers c
+JOIN 
+    orders o 
+ON 
+    c.customer_id = o.customer_id;
+
+
+SELECT 
+    c.customer_id, 
+    c.name, 
+    SUM(o.amount) AS total_spent 
+FROM 
+    customers c
+JOIN 
+    orders o 
+ON 
+    c.customer_id = o.customer_id 
+GROUP BY 
+    c.customer_id, 
+    c.name 
+ORDER BY 
+    total_spent DESC;
+
+
+CREATE INDEX idx_customers_email ON customers(email);
+
+
+ 
+SELECT * FROM customers 
+WHERE email LIKE '%example.com';
+
